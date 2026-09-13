@@ -1,5 +1,7 @@
 # Delass 3D Gallery
 
+Live at **[art.delass.ee](https://art.delass.ee)**.
+
 A small static site showcasing 3D prints that have already been made. Not a
 shop — there is nothing to buy here, it is just a place to look at the prints.
 
@@ -46,6 +48,14 @@ python3 -m http.server 8000 --directory public
 
 The piece count in the header and the deep links (`/#piece=slug`) come from
 that array, so nothing else needs updating.
+
+## The domain
+
+The site is served from `art.delass.ee`. That hostname is hard-coded in the
+`og:`/`twitter:` meta tags, `<link rel="canonical">`, `robots.txt` and
+`sitemap.xml` — link-preview crawlers need absolute URLs, so these cannot be
+relative. If the domain ever changes, grep for `art.delass.ee` and update
+all of them together.
 
 ## Deploying to Vercel
 

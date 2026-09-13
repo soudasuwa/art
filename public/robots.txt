@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://art.delass.ee/sitemap.xml
