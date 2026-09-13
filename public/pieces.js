@@ -16,7 +16,7 @@ window.PIECES = [
   {
     id: "stas",
     number: "01",
-    title: "Когда ты пишешь стасу раньше 14 утра",
+    title: "Когда ты пишешь Стасу раньше 14 утра",
     translit: "“When you text Stas before 14 a.m.”",
     image: "/images/01-stas-v2.jpg",
     width: 2576,
