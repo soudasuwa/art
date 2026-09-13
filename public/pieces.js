@@ -6,6 +6,8 @@
  *   title     the piece's name, in its original language
  *   translit  optional romanisation / translation, shown under the title
  *   image     path under /images
+ *   width     the photo's real pixel width  — reserves layout space
+ *   height    the photo's real pixel height — so nothing jumps on load
  *   alt       description for screen readers — describe the object, not the joke
  *   blurb     a sentence or two about the piece
  *   specs     free-form key/value pairs shown on the piece's page
@@ -17,6 +19,8 @@ window.PIECES = [
     title: "Когда ты пишет стасу раньше 14 утра",
     translit: "“When you text Stas before 14 a.m.”",
     image: "/images/01-stas.jpg",
+    width: 1932,
+    height: 2576,
     alt:
       "A rectangular black 3D-printed relief plaque showing a cartoon mouse " +
       "with a wide grin, with block lettering running up the left edge. " +

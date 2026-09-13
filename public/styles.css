@@ -6,10 +6,12 @@
    ============================================================ */
 
 :root {
+  color-scheme: dark;
+
   --bg: #0a0a0b;
   --ink: #f2f0ed;
   --ink-dim: #a5a19b;
-  --ink-faint: #6e6a65;
+  --ink-faint: #8b867f;
   --accent: #c2a06a;
   --line: rgba(242, 240, 237, 0.11);
   --line-strong: rgba(242, 240, 237, 0.22);
@@ -29,26 +31,32 @@
 [hidden] { display: none !important; }
 
 html {
+  /* No base font-size override: 1rem stays whatever the reader has set
+     in their browser or in iOS text-size settings, and every type size
+     below is relative to it. */
   -webkit-text-size-adjust: 100%;
-  scroll-behavior: smooth;
 }
 
 body {
   margin: 0;
   background: var(--bg);
   color: var(--ink);
-  font: 300 16px/1.65 var(--sans);
+  font: 400 1rem/1.65 var(--sans);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
 
-img { max-width: 100%; display: block; }
+/* height:auto is required alongside the width/height attributes on the
+   images — without it the attribute height would be taken literally. */
+img { max-width: 100%; height: auto; display: block; }
 
 .wrap {
   width: 100%;
   max-width: var(--wrap);
   margin: 0 auto;
-  padding-inline: var(--gutter);
+  /* Keep clear of the notch and rounded corners in landscape. */
+  padding-left: max(var(--gutter), env(safe-area-inset-left));
+  padding-right: max(var(--gutter), env(safe-area-inset-right));
 }
 
 .skip {
@@ -74,8 +82,8 @@ img { max-width: 100%; display: block; }
 .foot {
   font-family: var(--sans);
   font-weight: 400;
-  font-size: 11px;
-  letter-spacing: 0.24em;
+  font-size: 0.75rem;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
 }
 
@@ -92,7 +100,7 @@ img { max-width: 100%; display: block; }
 
 .masthead h1 {
   margin: 0;
-  font: 400 clamp(56px, 13vw, 148px)/0.92 var(--serif);
+  font: 400 clamp(3.5rem, 13vw, 9.25rem)/0.92 var(--serif);
   letter-spacing: -0.015em;
 }
 
@@ -100,7 +108,7 @@ img { max-width: 100%; display: block; }
   max-width: 38ch;
   margin: 32px 0 0;
   color: var(--ink-dim);
-  font-size: 17px;
+  font-size: 1.0625rem;
 }
 
 /* ============================================================
@@ -129,6 +137,8 @@ img { max-width: 100%; display: block; }
 
 .card-btn {
   display: block;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
   width: 100%;
   padding: 0;
   border: 0;
@@ -188,7 +198,7 @@ img { max-width: 100%; display: block; }
 .grid[data-count="1"] .card-meta { margin-top: 0; }
 
 .grid[data-count="1"] .card-title {
-  font-size: clamp(26px, 3.2vw, 38px);
+  font-size: clamp(1.625rem, 3.2vw, 2.375rem);
 }
 
 .card-meta {
@@ -205,21 +215,21 @@ img { max-width: 100%; display: block; }
 
 .card-num {
   flex: none;
-  font-size: 11px;
-  letter-spacing: 0.24em;
+  font-size: 0.75rem;
+  letter-spacing: 0.2em;
   color: var(--accent);
 }
 
 .card-title {
   margin: 0;
-  font: 400 clamp(21px, 2.3vw, 26px)/1.25 var(--serif);
+  font: 400 clamp(1.3125rem, 2.3vw, 1.625rem)/1.25 var(--serif);
   letter-spacing: 0.003em;
 }
 
 .card-sub {
   margin: 12px 0 0;
   color: var(--ink-faint);
-  font-size: 14px;
+  font-size: 0.9375rem;
   font-style: italic;
   font-family: var(--serif);
 }
@@ -239,6 +249,8 @@ img { max-width: 100%; display: block; }
 .back,
 .step {
   display: inline-flex;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
   align-items: center;
   gap: 12px;
   min-height: 44px;
@@ -246,7 +258,7 @@ img { max-width: 100%; display: block; }
   border: 0;
   background: none;
   color: var(--ink-dim);
-  font: 400 12px/1 var(--sans);
+  font: 400 0.75rem/1 var(--sans);
   letter-spacing: 0.2em;
   text-transform: uppercase;
   cursor: pointer;
@@ -254,7 +266,11 @@ img { max-width: 100%; display: block; }
 }
 
 .back:hover,
-.step:hover { color: var(--ink); }
+.step:hover,
+.back:active,
+.step:active { color: var(--ink); }
+
+.card-btn:active .thumb::after { border-color: var(--line-strong); }
 
 .back-arrow {
   display: inline-block;
@@ -284,14 +300,14 @@ img { max-width: 100%; display: block; }
 
 .piece-title {
   margin: 0;
-  font: 400 clamp(32px, 4.4vw, 52px)/1.12 var(--serif);
+  font: 400 clamp(2rem, 4.4vw, 3.25rem)/1.12 var(--serif);
   letter-spacing: -0.005em;
   outline: none;
 }
 
 .piece-translit {
   margin: 18px 0 0;
-  font: italic 400 clamp(18px, 2vw, 21px)/1.45 var(--serif);
+  font: italic 400 clamp(1.125rem, 2vw, 1.3125rem)/1.45 var(--serif);
   color: var(--accent);
 }
 
@@ -299,7 +315,7 @@ img { max-width: 100%; display: block; }
   margin: 32px 0 0;
   max-width: 46ch;
   color: var(--ink-dim);
-  font-size: 16px;
+  font-size: 1rem;
 }
 
 .specs {
@@ -320,7 +336,7 @@ img { max-width: 100%; display: block; }
 .specs dd {
   margin: 0;
   color: var(--ink);
-  font-size: 15px;
+  font-size: 0.9375rem;
 }
 
 .piece-steps {
@@ -337,7 +353,8 @@ img { max-width: 100%; display: block; }
    ============================================================ */
 
 .foot {
-  padding-block: clamp(48px, 8vh, 88px) 56px;
+  padding-block: clamp(48px, 8vh, 88px)
+    calc(56px + env(safe-area-inset-bottom));
   color: var(--ink-faint);
 }
 
@@ -369,11 +386,10 @@ body[data-view="piece"] .foot { border-top: 1px solid var(--line); }
 }
 
 @media (max-width: 520px) {
-  .lede { font-size: 16px; }
+  .lede { font-size: 1rem; }
   .piece-steps { flex-direction: column; align-items: flex-start; gap: 4px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  html { scroll-behavior: auto; }
   *, *::after { transition: none !important; }
 }

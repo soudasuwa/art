@@ -61,6 +61,8 @@
     thumbImg.alt = piece.alt || piece.title;
     thumbImg.loading = index === 0 ? "eager" : "lazy";
     thumbImg.decoding = "async";
+    if (piece.width) thumbImg.width = piece.width;
+    if (piece.height) thumbImg.height = piece.height;
     thumb.appendChild(thumbImg);
 
     var meta = el("div", "card-meta");
@@ -105,6 +107,10 @@
       history.replaceState({ piece: piece.id }, "", url);
     }
 
+    /* Set the intrinsic size before the src so the browser reserves the
+       right box and the text below it does not jump when the photo loads. */
+    if (piece.width) img.width = piece.width;
+    if (piece.height) img.height = piece.height;
     img.src = piece.image;
     img.alt = piece.alt || piece.title;
     num.textContent = piece.number;
