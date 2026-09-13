@@ -33,14 +33,11 @@ window.PIECES = [
     specs: {
       Printer: "Creality Ender 3 V2",
       Material: "PLA, black",
-      Process: "FDM, bas-relief",
       Size: "50 × 25 × 2.5 mm",
-      "Layer height": "0.2 mm",
+      Process: "FDM bas-relief, 0.2 mm layers, ≈45 min",
       Filament: "3 g · 1 m",
-      "Print time": "≈45 min",
       Finish: "As-printed, unsanded",
-      Made: "1 of 1",
-      Year: "2026"
+      Made: "1 of 1 · 2026"
     }
   }
 ];
