@@ -15,12 +15,21 @@
   var specs = document.getElementById("pieceSpecs");
   var steps = document.getElementById("pieceSteps");
 
+  /* Where every "get in touch" on the site points. One place to change it
+     for a real address later. */
+  var CONTACT_URL = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
+
   var siteTitle = document.title;
   var current = -1;
   var pushedEntry = false;
   var galleryScroll = 0;
   var photoDocTop = 0;
   var photoDocHeight = 0;
+
+  var contactLinks = document.querySelectorAll("[data-contact]");
+  for (var c = 0; c < contactLinks.length; c++) {
+    contactLinks[c].href = CONTACT_URL;
+  }
 
   document.getElementById("year").textContent = String(new Date().getFullYear());
   grid.dataset.count = String(pieces.length);

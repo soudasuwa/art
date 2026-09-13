@@ -75,6 +75,14 @@ python3 -m http.server 8000 --directory public
 The piece count in the header and the deep links (`/#piece=slug`) come from
 that array, so nothing else needs updating.
 
+## The contact link
+
+Both "get in touch" links — the one under the gallery and the one on each
+piece — take their address from `CONTACT_URL` at the top of `main.js`, and
+carry `data-contact` in the markup. It currently points at a well-known
+music video. Change the constant to a `mailto:` or a real page and both
+links follow.
+
 ## Replacing a photo
 
 Photos are cached for an hour, then served from cache while a fresh copy is
