@@ -116,16 +116,30 @@
     return node;
   }
 
-  function indexOfId(id) {
+  /* Catalogue numbers compare loosely, so #piece01 and #piece1 both land. */
+  function sameNumber(a, b) {
+    var norm = function (v) {
+      return String(v).toLowerCase().replace(/^0+(?=\w)/, "");
+    };
+    return norm(a) === norm(b);
+  }
+
+  function indexOfNumber(value) {
     for (var i = 0; i < pieces.length; i++) {
-      if (pieces[i].id === id) return i;
+      if (sameNumber(pieces[i].number, value)) return i;
     }
     return -1;
   }
 
-  function hashId() {
-    var match = /^#piece=(.+)$/.exec(location.hash);
-    return match ? decodeURIComponent(match[1]) : "";
+  /* The hash a piece is shared as: #piece01. */
+  function hashFor(piece) {
+    return "#piece" + encodeURIComponent(piece.number);
+  }
+
+  /* Which piece a hash points at, for #piece01 and nothing else. */
+  function indexFromHash() {
+    var match = /^#piece([\w-]+)$/i.exec(location.hash);
+    return match ? indexOfNumber(decodeURIComponent(match[1])) : -1;
   }
 
   function onPiece() {
@@ -187,14 +201,14 @@
     if (!piece) return;
 
     var wasOnPiece = onPiece();
-    var url = "#piece=" + encodeURIComponent(piece.id);
+    var url = hashFor(piece);
 
     if (push !== false && !wasOnPiece) {
       galleryScroll = window.scrollY;
-      history.pushState({ piece: piece.id }, "", url);
+      history.pushState({ piece: piece.number }, "", url);
       pushedEntry = true;
     } else {
-      history.replaceState({ piece: piece.id }, "", url);
+      history.replaceState({ piece: piece.number }, "", url);
     }
 
     /* Set the intrinsic size before the src so the browser reserves the
@@ -308,7 +322,7 @@
   /* ---------- history ---------- */
 
   window.addEventListener("popstate", function () {
-    var index = indexOfId(hashId());
+    var index = indexFromHash();
 
     if (index > -1) {
       showPiece(index, false);
@@ -327,7 +341,7 @@
     body.classList.remove("intro");
   }, introMs);
 
-  /* Deep link: /#piece=stas lands straight on that piece. */
-  var initial = indexOfId(hashId());
+  /* Deep link: /#piece01 lands straight on that piece. */
+  var initial = indexFromHash();
   if (initial > -1) showPiece(initial, false);
 })();

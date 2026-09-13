@@ -1,8 +1,8 @@
 /**
  * The gallery. Add a new object to the top of this array to add a piece.
  *
- *   id        stable slug, used in the URL hash (#piece=...)
- *   number    catalogue number shown on the card
+ *   number    catalogue number shown on the card; also identifies the
+ *             piece in its share link, e.g. #piece01
  *   title     the piece's name, in its original language
  *   translit  optional romanisation / translation, shown under the title
  *   image     path under /images
@@ -14,7 +14,6 @@
  */
 window.PIECES = [
   {
-    id: "stas",
     number: "01",
     title: "Когда ты пишешь Стасу раньше 14 утра",
     translit: "“When you text Stas before 14 a.m.”",

@@ -53,7 +53,6 @@ python3 -m http.server 8000 --directory public
 
 ```js
 {
-  id: "slug",
   number: "02",
   title: "Name of the piece",
   translit: "optional translation or romanisation",
@@ -72,8 +71,12 @@ python3 -m http.server 8000 --directory public
 
 3. Commit and push — Vercel redeploys on push.
 
-The piece count in the header and the deep links (`/#piece=slug`) come from
-that array, so nothing else needs updating.
+The piece count in the header and the deep links come from that array, so
+nothing else needs updating.
+
+Each piece is shared as `/#piece01`, taken from its `number` — so that
+number identifies the piece as well as labelling it. Renumbering a piece
+changes its link.
 
 ## The contact link
 
@@ -114,7 +117,7 @@ What is in place is the part that makes that safe and tidy:
 
 - `apple-touch-icon.png`, so the home-screen icon is the mark rather than
   a screenshot of the page.
-- Every navigation is in-page (`← Gallery`, `#piece=` hashes), so nothing
+- Every navigation is in-page (`← Gallery`, `#piece01` hashes), so nothing
   depends on browser chrome. A standalone window has no Back button; this
   page never needs one.
 - `viewport-fit=cover` plus safe-area padding, so a notch or home
