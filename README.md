@@ -60,7 +60,13 @@ python3 -m http.server 8000 --directory public
   image: "/images/02-slug.jpg",
   alt: "What the object physically looks like, for screen readers.",
   blurb: "A sentence or two about the print.",
-  specs: { Material: "PLA", Process: "FDM", Made: "1 of 1", Year: "2026" }
+  specs: {
+    Printer: "Creality Ender 3 V2",
+    Material: "PLA",
+    Process: "FDM, bas-relief",
+    Made: "1 of 1",
+    Year: "2026"
+  }
 }
 ```
 

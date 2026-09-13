@@ -16,7 +16,7 @@ window.PIECES = [
   {
     id: "stas",
     number: "01",
-    title: "Когда ты пишет стасу раньше 14 утра",
+    title: "Когда ты пишешь стасу раньше 14 утра",
     translit: "“When you text Stas before 14 a.m.”",
     image: "/images/01-stas-v2.jpg",
     width: 2576,
@@ -31,8 +31,9 @@ window.PIECES = [
       "as raised geometry catching the light — no colour, no paint. Based on a " +
       "reaction image; the caption is embossed along the bottom edge.",
     specs: {
+      Printer: "Creality Ender 3 V2",
       Material: "PLA, black",
-      Process: "FDM, relief / lithophane-style",
+      Process: "FDM, bas-relief",
       Finish: "As-printed, unsanded",
       Made: "1 of 1",
       Year: "2026"
