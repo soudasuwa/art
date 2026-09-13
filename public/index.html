@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Delass 3D Gallery</title>
+<meta name="description" content="A showcase of 3D prints from the Delass 3D Gallery." />
+<meta property="og:title" content="Delass 3D Gallery" />
+<meta property="og:description" content="A showcase of 3D prints from the Delass 3D Gallery." />
+<meta property="og:type" content="website" />
+<meta property="og:image" content="/images/01-stas.jpg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="/styles.css" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#129513;</text></svg>" />
+</head>
+<body>
+<a class="skip" href="#gallery">Skip to gallery</a>
+
+<header class="masthead">
+  <div class="wrap">
+    <p class="kicker">Delass</p>
+    <h1>3D&nbsp;Gallery</h1>
+    <p class="lede">
+      Things that came off the plate. Each piece is a finished print &mdash;
+      photographed as it is, layer lines and stringing included.
+    </p>
+    <p class="meta-line"><span id="count">0 pieces</span> &middot; FDM &middot; ongoing</p>
+  </div>
+</header>
+
+<main id="gallery" class="wrap">
+  <ul class="grid" id="grid"></ul>
+</main>
+
+<footer class="wrap foot">
+  <p>&copy; <span id="year"></span> Delass 3D Gallery. Not for sale &mdash; just for looking at.</p>
+</footer>
+
+<div class="lightbox" id="lightbox" hidden>
+  <button class="lb-close" id="lbClose" aria-label="Close">&times;</button>
+  <button class="lb-nav lb-prev" id="lbPrev" aria-label="Previous piece">&#8249;</button>
+  <button class="lb-nav lb-next" id="lbNext" aria-label="Next piece">&#8250;</button>
+  <figure class="lb-inner">
+    <img id="lbImg" alt="" />
+    <figcaption>
+      <h2 id="lbTitle"></h2>
+      <p id="lbTranslit" class="translit"></p>
+      <p id="lbDesc"></p>
+      <dl id="lbSpecs" class="specs"></dl>
+    </figcaption>
+  </figure>
+</div>
+
+<script src="/pieces.js"></script>
+<script src="/main.js"></script>
+</body>
+</html>
