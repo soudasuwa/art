@@ -37,8 +37,8 @@
    * to its place on the piece page. Where the API is missing, or the
    * reader has asked for less motion, the same swap just happens.
    */
-  function withTransition(run) {
-    if (reduceMotion.matches || !document.startViewTransition) {
+  function withTransition(run, animate) {
+    if (animate === false || reduceMotion.matches || !document.startViewTransition) {
       run();
       return;
     }
@@ -212,7 +212,18 @@
 
     current = index;
     document.title = piece.title + " — " + siteTitle;
-    setPhotoNames(index, !wasOnPiece && thumbOnScreen(index));
+
+    /* Records where the thumbnail sits, for the judgement on the way back. */
+    var thumbReady = thumbOnScreen(index);
+
+    /* A piece always opens at the top. Moving the scroll position as part
+       of a view transition makes the browser animate towards a position
+       the page then shifts out from under, which shows up as the photo
+       jumping and settling. Nothing to salvage there: when the scroll has
+       to move, the views just swap. */
+    var animate = window.scrollY === 0;
+
+    setPhotoNames(index, animate && !wasOnPiece && thumbReady);
 
     withTransition(function () {
       galleryView.hidden = true;
@@ -220,7 +231,7 @@
       body.dataset.view = "piece";
       window.scrollTo(0, 0);
       title.focus();
-    });
+    }, animate);
   }
 
   function showGallery() {
@@ -230,7 +241,12 @@
     current = -1;
     pushedEntry = false;
     document.title = siteTitle;
-    setPhotoNames(returning, morphOnReturn());
+
+    /* Same rule on the way back: the gallery scroll is being restored, so
+       animate only when that restores to where the page already is. */
+    var animate = window.scrollY === galleryScroll;
+
+    setPhotoNames(returning, animate && morphOnReturn());
 
     withTransition(function () {
       pieceView.hidden = true;
@@ -240,7 +256,7 @@
       window.scrollTo(0, galleryScroll);
       var card = grid.querySelectorAll(".card-btn")[returning];
       if (card) card.focus({ preventScroll: true });
-    });
+    }, animate);
   }
 
   /**

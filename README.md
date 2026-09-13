@@ -27,6 +27,13 @@ Browsers without it get the same swap without the animation, as does anyone
 who has asked for reduced motion — every animation lives inside a
 `prefers-reduced-motion: no-preference` query.
 
+It also only runs when the scroll position stays put. A piece opens at the
+top of the page, so opening one from a scrolled gallery — or returning to a
+scrolled gallery — has to move the scroll, and moving the scroll inside a
+view transition makes the browser animate towards a position the page then
+shifts out from under, which shows as the photo jumping and settling. There
+is no way to have both, so in that case the views simply swap.
+
 Thumbnails take each photo's own proportions from the `width`/`height` in
 `pieces.js`, so a landscape piece is not cropped into a portrait frame.
 
