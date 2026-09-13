@@ -244,6 +244,16 @@
     showGallery();
   });
 
+  /* The entrance animation is a first-load flourish, not a transition.
+     Un-hiding the gallery on the way back from a piece would otherwise
+     restart it, which reads as the text blinking. Hold the class only as
+     long as the run needs, then drop it for good. */
+  body.classList.add("intro");
+  var introMs = 1200 + Math.max(0, pieces.length - 1) * 90 + 250;
+  setTimeout(function () {
+    body.classList.remove("intro");
+  }, introMs);
+
   /* Deep link: /#piece=stas lands straight on that piece. */
   var initial = indexOfId(hashId());
   if (initial > -1) showPiece(initial, false);

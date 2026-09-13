@@ -420,19 +420,23 @@ body[data-view="piece"] .foot { border-top: 1px solid var(--line); }
    ============================================================ */
 
 @media (prefers-reduced-motion: no-preference) {
-  /* entrance: the masthead, then the plates, arriving in order */
-  .kicker,
-  .masthead h1,
-  .lede,
-  .index-label {
+  /* Entrance: the masthead, then the plates, arriving in order.
+     Scoped to body.intro, which JS drops once the run is over. Returning
+     from a piece un-hides the gallery, and an un-hidden element restarts
+     its animations — without this scope the text would blink out and
+     fade back in every time the reader came back. */
+  body.intro .kicker,
+  body.intro .masthead h1,
+  body.intro .lede,
+  body.intro .index-label {
     animation: rise 800ms cubic-bezier(0.2, 0.7, 0.2, 1) backwards;
   }
 
-  .masthead h1 { animation-delay: 60ms; }
-  .lede { animation-delay: 140ms; }
-  .index-label { animation-delay: 220ms; }
+  body.intro .masthead h1 { animation-delay: 60ms; }
+  body.intro .lede { animation-delay: 140ms; }
+  body.intro .index-label { animation-delay: 220ms; }
 
-  .card {
+  body.intro .card {
     animation: rise 900ms cubic-bezier(0.2, 0.7, 0.2, 1) backwards;
     animation-delay: calc(300ms + var(--i, 0) * 90ms);
   }
