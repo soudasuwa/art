@@ -11,6 +11,7 @@
   var lbSpecs = document.getElementById("lbSpecs");
   var current = -1;
   var lastFocused = null;
+  var pushedEntry = false;
 
   document.getElementById("year").textContent = String(new Date().getFullYear());
   document.getElementById("count").textContent =
@@ -56,12 +57,31 @@
 
   /* ---------- lightbox ---------- */
 
-  function open(index) {
+  function isOpen() {
+    return !lb.hidden;
+  }
+
+  /**
+   * Opening a piece adds a history entry so that Back — the reflex on a
+   * phone — closes the lightbox instead of leaving the site. Stepping
+   * between pieces replaces that entry rather than stacking one per piece.
+   */
+  function open(index, push) {
     var piece = pieces[index];
     if (!piece) return;
 
+    var wasOpen = isOpen();
+    var url = "#piece=" + encodeURIComponent(piece.id);
+
+    if (push !== false && !wasOpen) {
+      history.pushState({ lb: piece.id }, "", url);
+      pushedEntry = true;
+    } else {
+      history.replaceState({ lb: piece.id }, "", url);
+    }
+
+    if (!wasOpen) lastFocused = document.activeElement;
     current = index;
-    lastFocused = document.activeElement;
 
     lbImg.src = piece.image;
     lbImg.alt = piece.alt || piece.title;
@@ -86,24 +106,46 @@
     lb.setAttribute("aria-modal", "true");
     lb.setAttribute("aria-label", piece.title);
     document.body.classList.add("lb-open");
-    history.replaceState(null, "", "#piece=" + piece.id);
-    document.getElementById("lbClose").focus();
+    lb.scrollTop = 0;
+    if (!wasOpen) document.getElementById("lbClose").focus();
   }
 
-  function close() {
+  function close(fromPopstate) {
+    if (!isOpen()) return;
+
     lb.hidden = true;
     current = -1;
     document.body.classList.remove("lb-open");
-    history.replaceState(null, "", location.pathname + location.search);
+
+    if (!fromPopstate) {
+      if (pushedEntry) {
+        pushedEntry = false;
+        history.back();
+      } else {
+        history.replaceState(null, "", location.pathname + location.search);
+      }
+    } else {
+      pushedEntry = false;
+    }
+
     if (lastFocused && lastFocused.focus) lastFocused.focus();
   }
 
   function step(delta) {
     if (current < 0 || pieces.length < 2) return;
-    open((current + delta + pieces.length) % pieces.length);
+    open((current + delta + pieces.length) % pieces.length, false);
   }
 
-  document.getElementById("lbClose").addEventListener("click", close);
+  function indexOfId(id) {
+    for (var i = 0; i < pieces.length; i++) {
+      if (pieces[i].id === id) return i;
+    }
+    return -1;
+  }
+
+  document.getElementById("lbClose").addEventListener("click", function () {
+    close();
+  });
   document.getElementById("lbPrev").addEventListener("click", function () {
     step(-1);
   });
@@ -122,12 +164,22 @@
     else if (event.key === "ArrowRight") step(1);
   });
 
-  /* Deep link: /#piece=stas opens that piece directly. */
-  var hash = /^#piece=(.+)$/.exec(location.hash);
-  if (hash) {
-    var wanted = decodeURIComponent(hash[1]);
-    pieces.forEach(function (piece, index) {
-      if (piece.id === wanted) open(index);
-    });
+  /* Back/forward: close an open lightbox, or follow the hash to a piece. */
+  window.addEventListener("popstate", function () {
+    if (isOpen()) {
+      close(true);
+      return;
+    }
+    var index = indexOfId(hashId());
+    if (index > -1) open(index, false);
+  });
+
+  function hashId() {
+    var match = /^#piece=(.+)$/.exec(location.hash);
+    return match ? decodeURIComponent(match[1]) : "";
   }
+
+  /* Deep link: /#piece=stas opens that piece directly, e.g. from a shared URL. */
+  var initial = indexOfId(hashId());
+  if (initial > -1) open(initial, false);
 })();
