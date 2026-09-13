@@ -2,18 +2,26 @@
   "use strict";
 
   var pieces = window.PIECES || [];
+  var body = document.body;
+  var galleryView = document.getElementById("galleryView");
+  var pieceView = document.getElementById("pieceView");
   var grid = document.getElementById("grid");
-  var lb = document.getElementById("lightbox");
-  var lbImg = document.getElementById("lbImg");
-  var lbTitle = document.getElementById("lbTitle");
-  var lbTranslit = document.getElementById("lbTranslit");
-  var lbDesc = document.getElementById("lbDesc");
-  var lbSpecs = document.getElementById("lbSpecs");
+
+  var img = document.getElementById("pieceImg");
+  var num = document.getElementById("pieceNum");
+  var title = document.getElementById("pieceTitle");
+  var translit = document.getElementById("pieceTranslit");
+  var blurb = document.getElementById("pieceBlurb");
+  var specs = document.getElementById("pieceSpecs");
+  var steps = document.getElementById("pieceSteps");
+
+  var siteTitle = document.title;
   var current = -1;
-  var lastFocused = null;
   var pushedEntry = false;
+  var galleryScroll = 0;
 
   document.getElementById("year").textContent = String(new Date().getFullYear());
+  grid.dataset.count = String(pieces.length);
   document.getElementById("count").textContent =
     pieces.length + (pieces.length === 1 ? " piece" : " pieces");
 
@@ -24,118 +32,6 @@
     return node;
   }
 
-  /* ---------- cards ---------- */
-
-  pieces.forEach(function (piece, index) {
-    var li = el("li", "card");
-    var btn = el("button", "card-btn");
-    btn.type = "button";
-    btn.setAttribute("aria-haspopup", "dialog");
-
-    var thumb = el("div", "thumb");
-    var img = new Image();
-    img.src = piece.image;
-    img.alt = piece.alt || piece.title;
-    img.loading = index === 0 ? "eager" : "lazy";
-    img.decoding = "async";
-    thumb.appendChild(img);
-
-    var body = el("div", "card-body");
-    body.appendChild(el("p", "card-num", piece.number));
-    body.appendChild(el("h2", "card-title", piece.title));
-    if (piece.translit) body.appendChild(el("p", "card-sub", piece.translit));
-
-    btn.appendChild(thumb);
-    btn.appendChild(body);
-    btn.addEventListener("click", function () {
-      open(index);
-    });
-
-    li.appendChild(btn);
-    grid.appendChild(li);
-  });
-
-  /* ---------- lightbox ---------- */
-
-  function isOpen() {
-    return !lb.hidden;
-  }
-
-  /**
-   * Opening a piece adds a history entry so that Back — the reflex on a
-   * phone — closes the lightbox instead of leaving the site. Stepping
-   * between pieces replaces that entry rather than stacking one per piece.
-   */
-  function open(index, push) {
-    var piece = pieces[index];
-    if (!piece) return;
-
-    var wasOpen = isOpen();
-    var url = "#piece=" + encodeURIComponent(piece.id);
-
-    if (push !== false && !wasOpen) {
-      history.pushState({ lb: piece.id }, "", url);
-      pushedEntry = true;
-    } else {
-      history.replaceState({ lb: piece.id }, "", url);
-    }
-
-    if (!wasOpen) lastFocused = document.activeElement;
-    current = index;
-
-    lbImg.src = piece.image;
-    lbImg.alt = piece.alt || piece.title;
-    lbTitle.textContent = piece.title;
-    lbTranslit.textContent = piece.translit || "";
-    lbTranslit.hidden = !piece.translit;
-    lbDesc.textContent = piece.blurb || "";
-    lbDesc.hidden = !piece.blurb;
-
-    lbSpecs.textContent = "";
-    Object.keys(piece.specs || {}).forEach(function (key) {
-      lbSpecs.appendChild(el("dt", null, key));
-      lbSpecs.appendChild(el("dd", null, piece.specs[key]));
-    });
-
-    var multiple = pieces.length > 1;
-    document.getElementById("lbPrev").hidden = !multiple;
-    document.getElementById("lbNext").hidden = !multiple;
-
-    lb.hidden = false;
-    lb.setAttribute("role", "dialog");
-    lb.setAttribute("aria-modal", "true");
-    lb.setAttribute("aria-label", piece.title);
-    document.body.classList.add("lb-open");
-    lb.scrollTop = 0;
-    if (!wasOpen) document.getElementById("lbClose").focus();
-  }
-
-  function close(fromPopstate) {
-    if (!isOpen()) return;
-
-    lb.hidden = true;
-    current = -1;
-    document.body.classList.remove("lb-open");
-
-    if (!fromPopstate) {
-      if (pushedEntry) {
-        pushedEntry = false;
-        history.back();
-      } else {
-        history.replaceState(null, "", location.pathname + location.search);
-      }
-    } else {
-      pushedEntry = false;
-    }
-
-    if (lastFocused && lastFocused.focus) lastFocused.focus();
-  }
-
-  function step(delta) {
-    if (current < 0 || pieces.length < 2) return;
-    open((current + delta + pieces.length) % pieces.length, false);
-  }
-
   function indexOfId(id) {
     for (var i = 0; i < pieces.length; i++) {
       if (pieces[i].id === id) return i;
@@ -143,43 +39,173 @@
     return -1;
   }
 
-  document.getElementById("lbClose").addEventListener("click", function () {
-    close();
-  });
-  document.getElementById("lbPrev").addEventListener("click", function () {
-    step(-1);
-  });
-  document.getElementById("lbNext").addEventListener("click", function () {
-    step(1);
-  });
-
-  lb.addEventListener("click", function (event) {
-    if (event.target === lb) close();
-  });
-
-  document.addEventListener("keydown", function (event) {
-    if (lb.hidden) return;
-    if (event.key === "Escape") close();
-    else if (event.key === "ArrowLeft") step(-1);
-    else if (event.key === "ArrowRight") step(1);
-  });
-
-  /* Back/forward: close an open lightbox, or follow the hash to a piece. */
-  window.addEventListener("popstate", function () {
-    if (isOpen()) {
-      close(true);
-      return;
-    }
-    var index = indexOfId(hashId());
-    if (index > -1) open(index, false);
-  });
-
   function hashId() {
     var match = /^#piece=(.+)$/.exec(location.hash);
     return match ? decodeURIComponent(match[1]) : "";
   }
 
-  /* Deep link: /#piece=stas opens that piece directly, e.g. from a shared URL. */
+  function onPiece() {
+    return body.dataset.view === "piece";
+  }
+
+  /* ---------- gallery index ---------- */
+
+  pieces.forEach(function (piece, index) {
+    var li = el("li", "card");
+    var btn = el("button", "card-btn");
+    btn.type = "button";
+
+    var thumb = el("div", "thumb");
+    var thumbImg = new Image();
+    thumbImg.src = piece.image;
+    thumbImg.alt = piece.alt || piece.title;
+    thumbImg.loading = index === 0 ? "eager" : "lazy";
+    thumbImg.decoding = "async";
+    thumb.appendChild(thumbImg);
+
+    var meta = el("div", "card-meta");
+    meta.appendChild(el("span", "card-num", piece.number));
+    meta.appendChild(el("h2", "card-title", piece.title));
+
+    var caption = el("div", "card-caption");
+    caption.appendChild(meta);
+    if (piece.translit) caption.appendChild(el("p", "card-sub", piece.translit));
+
+    btn.appendChild(thumb);
+    btn.appendChild(caption);
+
+    btn.addEventListener("click", function () {
+      showPiece(index);
+    });
+
+    li.appendChild(btn);
+    grid.appendChild(li);
+  });
+
+  /* ---------- the piece as its own page ---------- */
+
+  /**
+   * Opening a piece swaps the whole view rather than layering a dialog
+   * over the grid, and pushes a history entry so Back returns to the
+   * gallery. Stepping between pieces replaces that entry instead of
+   * stacking one per piece.
+   */
+  function showPiece(index, push) {
+    var piece = pieces[index];
+    if (!piece) return;
+
+    var wasOnPiece = onPiece();
+    var url = "#piece=" + encodeURIComponent(piece.id);
+
+    if (push !== false && !wasOnPiece) {
+      galleryScroll = window.scrollY;
+      history.pushState({ piece: piece.id }, "", url);
+      pushedEntry = true;
+    } else {
+      history.replaceState({ piece: piece.id }, "", url);
+    }
+
+    img.src = piece.image;
+    img.alt = piece.alt || piece.title;
+    num.textContent = piece.number;
+    title.textContent = piece.title;
+
+    translit.textContent = piece.translit || "";
+    translit.hidden = !piece.translit;
+    blurb.textContent = piece.blurb || "";
+    blurb.hidden = !piece.blurb;
+
+    specs.textContent = "";
+    Object.keys(piece.specs || {}).forEach(function (key) {
+      specs.appendChild(el("dt", null, key));
+      specs.appendChild(el("dd", null, piece.specs[key]));
+    });
+
+    steps.hidden = pieces.length < 2;
+
+    current = index;
+    galleryView.hidden = true;
+    pieceView.hidden = false;
+    body.dataset.view = "piece";
+    document.title = piece.title + " — " + siteTitle;
+
+    window.scrollTo(0, 0);
+    title.focus();
+  }
+
+  function showGallery(fromPopstate) {
+    if (!onPiece()) return;
+
+    pieceView.hidden = true;
+    galleryView.hidden = false;
+    body.dataset.view = "gallery";
+    document.title = siteTitle;
+
+    var returning = current;
+    current = -1;
+
+    if (!fromPopstate) {
+      if (pushedEntry) {
+        pushedEntry = false;
+        history.back();
+        return; /* popstate restores the scroll position */
+      }
+      history.replaceState(null, "", location.pathname + location.search);
+    } else {
+      pushedEntry = false;
+    }
+
+    restoreGallery(returning);
+  }
+
+  /* Put the reader back where they were, and on the card they opened. */
+  function restoreGallery(index) {
+    window.scrollTo(0, galleryScroll);
+    var card = grid.querySelectorAll(".card-btn")[index];
+    if (card) card.focus({ preventScroll: true });
+  }
+
+  /* ---------- controls ---------- */
+
+  function step(delta) {
+    if (current < 0 || pieces.length < 2) return;
+    showPiece((current + delta + pieces.length) % pieces.length, false);
+  }
+
+  document.getElementById("backBtn").addEventListener("click", function () {
+    showGallery();
+  });
+  document.getElementById("prevBtn").addEventListener("click", function () {
+    step(-1);
+  });
+  document.getElementById("nextBtn").addEventListener("click", function () {
+    step(1);
+  });
+
+  document.addEventListener("keydown", function (event) {
+    if (!onPiece()) return;
+    if (event.key === "Escape") showGallery();
+    else if (event.key === "ArrowLeft") step(-1);
+    else if (event.key === "ArrowRight") step(1);
+  });
+
+  /* ---------- history ---------- */
+
+  window.addEventListener("popstate", function () {
+    var index = indexOfId(hashId());
+
+    if (index > -1) {
+      showPiece(index, false);
+      return;
+    }
+    if (onPiece()) {
+      var returning = current;
+      showGallery(true);
+      restoreGallery(returning);
+    }
+  });
+
+  /* Deep link: /#piece=stas lands straight on that piece. */
   var initial = indexOfId(hashId());
-  if (initial > -1) open(initial, false);
+  if (initial > -1) showPiece(initial, false);
 })();

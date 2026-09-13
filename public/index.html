@@ -6,7 +6,7 @@
 <title>Delass 3D Gallery</title>
 <meta name="description" content="A showcase of 3D prints from the Delass 3D Gallery." />
 <link rel="canonical" href="https://art.delass.ee/" />
-<meta name="theme-color" content="#0b0b0d" />
+<meta name="theme-color" content="#0a0a0b" />
 
 <!-- Link previews. og:image must be an absolute URL — most crawlers
      will not resolve a relative one. -->
@@ -21,49 +21,72 @@
 <meta name="twitter:title" content="Delass 3D Gallery" />
 <meta name="twitter:description" content="A showcase of 3D prints from the Delass 3D Gallery." />
 <meta name="twitter:image" content="https://art.delass.ee/images/01-stas.jpg" />
+
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="/styles.css" />
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#129513;</text></svg>" />
 </head>
-<body>
-<a class="skip" href="#gallery">Skip to gallery</a>
+<body data-view="gallery">
+<a class="skip" href="#gallery">Skip to the gallery</a>
 
-<header class="masthead">
+<!-- ===== gallery view ===== -->
+<div id="galleryView">
+  <header class="masthead">
+    <div class="wrap">
+      <p class="kicker">Delass</p>
+      <h1>3D&nbsp;Gallery</h1>
+      <p class="lede">
+        Things that came off the plate. Every piece here is finished and
+        photographed as it is &mdash; layer lines, stringing and all.
+      </p>
+    </div>
+  </header>
+
+  <main id="gallery" class="wrap">
+    <p class="index-label"><span id="count"></span></p>
+    <ul class="grid" id="grid"></ul>
+  </main>
+</div>
+
+<!-- ===== single piece view ===== -->
+<article id="pieceView" class="piece" hidden>
   <div class="wrap">
-    <p class="kicker">Delass</p>
-    <h1>3D&nbsp;Gallery</h1>
-    <p class="lede">
-      Things that came off the plate. Each piece is a finished print &mdash;
-      photographed as it is, layer lines and stringing included.
-    </p>
-    <p class="meta-line"><span id="count">0 pieces</span> &middot; FDM &middot; ongoing</p>
-  </div>
-</header>
+    <nav class="piece-nav">
+      <button type="button" class="back" id="backBtn">
+        <span class="back-arrow" aria-hidden="true">&#8592;</span> Gallery
+      </button>
+    </nav>
 
-<main id="gallery" class="wrap">
-  <ul class="grid" id="grid"></ul>
-</main>
+    <div class="piece-body">
+      <figure class="piece-figure">
+        <img id="pieceImg" alt="" />
+      </figure>
+
+      <div class="piece-text">
+        <p class="piece-num" id="pieceNum"></p>
+        <h1 class="piece-title" id="pieceTitle" tabindex="-1"></h1>
+        <p class="piece-translit" id="pieceTranslit"></p>
+        <p class="piece-blurb" id="pieceBlurb"></p>
+        <dl class="specs" id="pieceSpecs"></dl>
+      </div>
+    </div>
+
+    <nav class="piece-steps" id="pieceSteps" hidden>
+      <button type="button" class="step" id="prevBtn">
+        <span aria-hidden="true">&#8592;</span> Previous piece
+      </button>
+      <button type="button" class="step" id="nextBtn">
+        Next piece <span aria-hidden="true">&#8594;</span>
+      </button>
+    </nav>
+  </div>
+</article>
 
 <footer class="wrap foot">
-  <p>&copy; <span id="year"></span> Delass 3D Gallery. Not for sale &mdash; just for looking at.</p>
+  <p>&copy; <span id="year"></span> Delass 3D Gallery &mdash; nothing here is for sale.</p>
 </footer>
-
-<div class="lightbox" id="lightbox" hidden>
-  <button class="lb-close" id="lbClose" aria-label="Close">&times;</button>
-  <button class="lb-nav lb-prev" id="lbPrev" aria-label="Previous piece">&#8249;</button>
-  <button class="lb-nav lb-next" id="lbNext" aria-label="Next piece">&#8250;</button>
-  <figure class="lb-inner">
-    <img id="lbImg" alt="" />
-    <figcaption>
-      <h2 id="lbTitle"></h2>
-      <p id="lbTranslit" class="translit"></p>
-      <p id="lbDesc"></p>
-      <dl id="lbSpecs" class="specs"></dl>
-    </figcaption>
-  </figure>
-</div>
 
 <script src="/pieces.js"></script>
 <script src="/main.js"></script>

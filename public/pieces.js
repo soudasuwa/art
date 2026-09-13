@@ -8,7 +8,7 @@
  *   image     path under /images
  *   alt       description for screen readers — describe the object, not the joke
  *   blurb     a sentence or two about the piece
- *   specs     free-form key/value pairs shown in the detail view
+ *   specs     free-form key/value pairs shown on the piece's page
  */
 window.PIECES = [
   {
@@ -29,7 +29,8 @@ window.PIECES = [
       Material: "PLA, black",
       Process: "FDM, relief / lithophane-style",
       Finish: "As-printed, unsanded",
-      Year: "2025"
+      Made: "1 of 1",
+      Year: "2026"
     }
   }
 ];

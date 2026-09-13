@@ -9,13 +9,17 @@ shop — there is nothing to buy here, it is just a place to look at the prints.
 
 ```
 public/
-  index.html    markup + lightbox shell
+  index.html    both views: the gallery index and a single piece
   styles.css    all styling, no framework
   pieces.js     the gallery data — this is the file you edit
-  main.js       renders the grid and drives the lightbox
+  main.js       renders the grid and swaps between the two views
   images/       photographs of the prints
 vercel.json     static deploy config
 ```
+
+Opening a piece swaps the whole view rather than layering a dialog over the
+grid, so a piece reads as its own page with a Gallery link back. `body[data-view]`
+is what the CSS switches on.
 
 No build step, no dependencies. Open `public/index.html` in a browser, or
 serve the folder:
@@ -40,7 +44,7 @@ python3 -m http.server 8000 --directory public
   image: "/images/02-slug.jpg",
   alt: "What the object physically looks like, for screen readers.",
   blurb: "A sentence or two about the print.",
-  specs: { Material: "PLA", Process: "FDM", Finish: "As-printed", Year: "2025" }
+  specs: { Material: "PLA", Process: "FDM", Made: "1 of 1", Year: "2026" }
 }
 ```
 
