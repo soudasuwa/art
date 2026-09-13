@@ -19,16 +19,17 @@ window.PIECES = [
     title: "Когда ты пишет стасу раньше 14 утра",
     translit: "“When you text Stas before 14 a.m.”",
     image: "/images/01-stas.jpg",
-    width: 1932,
-    height: 2576,
+    width: 2576,
+    height: 1932,
     alt:
-      "A rectangular black 3D-printed relief plaque showing a cartoon mouse " +
-      "with a wide grin, with block lettering running up the left edge. " +
-      "Photographed lying on dark navy fabric with gold fan-shaped embroidery.",
+      "A black 3D-printed relief plaque, wider than it is tall, showing a " +
+      "cartoon mouse with a wide grin and raised block lettering along the " +
+      "bottom edge. Photographed lying on dark navy fabric with gold " +
+      "fan-shaped embroidery.",
     blurb:
       "A relief plaque printed flat in black PLA, so the whole image reads only " +
       "as raised geometry catching the light — no colour, no paint. Based on a " +
-      "reaction image; the caption is embossed along the left edge.",
+      "reaction image; the caption is embossed along the bottom edge.",
     specs: {
       Material: "PLA, black",
       Process: "FDM, relief / lithophane-style",

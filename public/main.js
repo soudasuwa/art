@@ -25,6 +25,33 @@
   document.getElementById("count").textContent =
     pieces.length + (pieces.length === 1 ? " piece" : " pieces");
 
+  var reduceMotion = window.matchMedia
+    ? window.matchMedia("(prefers-reduced-motion: reduce)")
+    : { matches: false };
+
+  /**
+   * Swapping the two views through a view transition lets the browser
+   * cross-fade the page and carry the photo from its place in the grid
+   * to its place on the piece page. Where the API is missing, or the
+   * reader has asked for less motion, the same swap just happens.
+   */
+  function withTransition(run) {
+    if (reduceMotion.matches || !document.startViewTransition) {
+      run();
+      return;
+    }
+    document.startViewTransition(run);
+  }
+
+  /* Only one element may carry a given transition name at a time, so the
+     name moves to whichever thumbnail is being opened or returned to. */
+  function markPhoto(index) {
+    var thumbs = grid.querySelectorAll(".thumb img");
+    for (var i = 0; i < thumbs.length; i++) {
+      thumbs[i].style.viewTransitionName = i === index ? "piece-photo" : "";
+    }
+  }
+
   function el(tag, className, text) {
     var node = document.createElement(tag);
     if (className) node.className = className;
@@ -52,10 +79,16 @@
 
   pieces.forEach(function (piece, index) {
     var li = el("li", "card");
+    li.style.setProperty("--i", String(index));
     var btn = el("button", "card-btn");
     btn.type = "button";
 
     var thumb = el("div", "thumb");
+    /* Let the frame take the photo's own proportions, so a landscape
+       piece is not cropped into a portrait box. */
+    if (piece.width && piece.height) {
+      thumb.style.aspectRatio = piece.width + " / " + piece.height;
+    }
     var thumbImg = new Image();
     thumbImg.src = piece.image;
     thumbImg.alt = piece.alt || piece.title;
@@ -130,45 +163,51 @@
     steps.hidden = pieces.length < 2;
 
     current = index;
-    galleryView.hidden = true;
-    pieceView.hidden = false;
-    body.dataset.view = "piece";
     document.title = piece.title + " — " + siteTitle;
+    markPhoto(index);
 
-    window.scrollTo(0, 0);
-    title.focus();
+    withTransition(function () {
+      galleryView.hidden = true;
+      pieceView.hidden = false;
+      body.dataset.view = "piece";
+      window.scrollTo(0, 0);
+      title.focus();
+    });
   }
 
-  function showGallery(fromPopstate) {
+  function showGallery() {
     if (!onPiece()) return;
-
-    pieceView.hidden = true;
-    galleryView.hidden = false;
-    body.dataset.view = "gallery";
-    document.title = siteTitle;
 
     var returning = current;
     current = -1;
+    pushedEntry = false;
+    document.title = siteTitle;
+    markPhoto(returning);
 
-    if (!fromPopstate) {
-      if (pushedEntry) {
-        pushedEntry = false;
-        history.back();
-        return; /* popstate restores the scroll position */
-      }
-      history.replaceState(null, "", location.pathname + location.search);
-    } else {
-      pushedEntry = false;
-    }
-
-    restoreGallery(returning);
+    withTransition(function () {
+      pieceView.hidden = true;
+      galleryView.hidden = false;
+      body.dataset.view = "gallery";
+      /* Put the reader back where they were, on the card they opened. */
+      window.scrollTo(0, galleryScroll);
+      var card = grid.querySelectorAll(".card-btn")[returning];
+      if (card) card.focus({ preventScroll: true });
+    });
   }
 
-  /* Put the reader back where they were, and on the card they opened. */
-  function restoreGallery(index) {
-    window.scrollTo(0, galleryScroll);
-    var card = grid.querySelectorAll(".card-btn")[index];
-    if (card) card.focus({ preventScroll: true });
+  /**
+   * Leaving a piece pops the entry that opening it pushed, so the history
+   * stack stays honest and popstate drives the swap. A piece opened cold
+   * from a shared link has no entry to pop, so it swaps directly.
+   */
+  function goBack() {
+    if (pushedEntry) {
+      pushedEntry = false;
+      history.back();
+      return;
+    }
+    history.replaceState(null, "", location.pathname + location.search);
+    showGallery();
   }
 
   /* ---------- controls ---------- */
@@ -178,9 +217,7 @@
     showPiece((current + delta + pieces.length) % pieces.length, false);
   }
 
-  document.getElementById("backBtn").addEventListener("click", function () {
-    showGallery();
-  });
+  document.getElementById("backBtn").addEventListener("click", goBack);
   document.getElementById("prevBtn").addEventListener("click", function () {
     step(-1);
   });
@@ -190,7 +227,7 @@
 
   document.addEventListener("keydown", function (event) {
     if (!onPiece()) return;
-    if (event.key === "Escape") showGallery();
+    if (event.key === "Escape") goBack();
     else if (event.key === "ArrowLeft") step(-1);
     else if (event.key === "ArrowRight") step(1);
   });
@@ -204,11 +241,7 @@
       showPiece(index, false);
       return;
     }
-    if (onPiece()) {
-      var returning = current;
-      showGallery(true);
-      restoreGallery(returning);
-    }
+    showGallery();
   });
 
   /* Deep link: /#piece=stas lands straight on that piece. */

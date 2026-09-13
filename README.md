@@ -21,6 +21,15 @@ Opening a piece swaps the whole view rather than layering a dialog over the
 grid, so a piece reads as its own page with a Gallery link back. `body[data-view]`
 is what the CSS switches on.
 
+The swap runs through the View Transitions API where the browser has it, so
+the photo carries from its place in the grid to its place on the piece page.
+Browsers without it get the same swap without the animation, as does anyone
+who has asked for reduced motion — every animation lives inside a
+`prefers-reduced-motion: no-preference` query.
+
+Thumbnails take each photo's own proportions from the `width`/`height` in
+`pieces.js`, so a landscape piece is not cropped into a portrait frame.
+
 No build step, no dependencies. Open `public/index.html` in a browser, or
 serve the folder:
 

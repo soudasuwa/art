@@ -172,7 +172,7 @@ img { max-width: 100%; height: auto; display: block; }
 
 .thumb {
   position: relative;
-  aspect-ratio: 3 / 4;
+  aspect-ratio: 3 / 4;   /* fallback; JS sets the photo's real ratio */
   max-width: 100%;
   overflow: hidden;
   background: #060607;
@@ -209,7 +209,7 @@ img { max-width: 100%; height: auto; display: block; }
 
 .grid[data-count="1"] .card-btn {
   display: grid;
-  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
   gap: clamp(32px, 5vw, 72px);
   align-items: end;
 }
@@ -413,6 +413,67 @@ body[data-view="piece"] .foot { border-top: 1px solid var(--line); }
   .piece-steps { flex-direction: column; align-items: flex-start; gap: 4px; }
 }
 
+/* ============================================================
+   motion
+   Everything here is inside a no-preference query, so a reader who
+   asks for less motion gets the page with none of it.
+   ============================================================ */
+
+@media (prefers-reduced-motion: no-preference) {
+  /* entrance: the masthead, then the plates, arriving in order */
+  .kicker,
+  .masthead h1,
+  .lede,
+  .index-label {
+    animation: rise 800ms cubic-bezier(0.2, 0.7, 0.2, 1) backwards;
+  }
+
+  .masthead h1 { animation-delay: 60ms; }
+  .lede { animation-delay: 140ms; }
+  .index-label { animation-delay: 220ms; }
+
+  .card {
+    animation: rise 900ms cubic-bezier(0.2, 0.7, 0.2, 1) backwards;
+    animation-delay: calc(300ms + var(--i, 0) * 90ms);
+  }
+
+  @keyframes rise {
+    from { opacity: 0; transform: translate3d(0, 14px, 0); }
+    to { opacity: 1; transform: none; }
+  }
+
+  /* the press itself, since hover says nothing on a touch screen */
+  .card-btn:active .thumb img { transform: scale(0.992); }
+  .back:active .back-arrow { transform: translateX(-5px); }
+
+  /* the photo carries across from the grid to the piece page */
+  #pieceImg { view-transition-name: piece-photo; }
+
+  ::view-transition-group(piece-photo) {
+    animation-duration: 520ms;
+    animation-timing-function: cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+
+  ::view-transition-old(piece-photo),
+  ::view-transition-new(piece-photo) {
+    /* the two photos are the same picture: hold both at full opacity so
+       it reads as one object moving, not one fading into another */
+    animation: none;
+    mix-blend-mode: normal;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 380ms;
+    animation-timing-function: cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::after { transition: none !important; }
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) { animation: none !important; }
 }
