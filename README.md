@@ -62,6 +62,18 @@ python3 -m http.server 8000 --directory public
 The piece count in the header and the deep links (`/#piece=slug`) come from
 that array, so nothing else needs updating.
 
+## Replacing a photo
+
+Photos are cached for an hour, then served from cache while a fresh copy is
+fetched in the background. So a **new** photo appears immediately, but one
+that **replaces** an existing file at the same path can keep showing the old
+version for up to an hour.
+
+To see a replacement straight away, change its filename (`01-stas.jpg` ->
+`01-stas-v2.jpg`) and update the `image` path in `pieces.js` — a new URL can
+never be served from an old cache entry. Do the same if the photo is the one
+in the `og:image` tags, since link previews cache harder than browsers do.
+
 ## The domain
 
 The site is served from `art.delass.ee`. That hostname is hard-coded in the

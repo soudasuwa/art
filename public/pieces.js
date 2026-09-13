@@ -18,7 +18,7 @@ window.PIECES = [
     number: "01",
     title: "Когда ты пишет стасу раньше 14 утра",
     translit: "“When you text Stas before 14 a.m.”",
-    image: "/images/01-stas.jpg",
+    image: "/images/01-stas-v2.jpg",
     width: 2576,
     height: 1932,
     alt:
