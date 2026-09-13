@@ -44,6 +44,27 @@ body {
   font: 400 1rem/1.65 var(--sans);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+  /* A title or spec value long enough to out-measure its column breaks
+     rather than pushing the page sideways. Must be "anywhere", not
+     "break-word": only "anywhere" is taken into account when a grid or
+     flex track works out its minimum width. */
+  overflow-wrap: anywhere;
+}
+
+/* Nothing here takes typed input today. If something ever does, Safari
+   zooms the page when a control smaller than 16px takes focus — this
+   keeps that from happening. */
+input,
+select,
+textarea {
+  font-size: max(1rem, 16px);
+}
+
+/* No double-tap-to-zoom delay on anything tappable. */
+a,
+button {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 /* height:auto is required alongside the width/height attributes on the
@@ -130,10 +151,10 @@ img { max-width: 100%; height: auto; display: block; }
   padding: 0 0 clamp(72px, 14vh, 132px);
   display: grid;
   gap: clamp(36px, 5vw, 64px) clamp(28px, 4vw, 48px);
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr));
 }
 
-.card { margin: 0; }
+.card { margin: 0; min-width: 0; }
 
 .card-btn {
   display: block;
@@ -204,6 +225,7 @@ img { max-width: 100%; height: auto; display: block; }
 .card-meta {
   display: flex;
   align-items: baseline;
+  min-width: 0;
   gap: 14px;
   margin-top: 20px;
   padding-bottom: 14px;
@@ -222,6 +244,7 @@ img { max-width: 100%; height: auto; display: block; }
 
 .card-title {
   margin: 0;
+  min-width: 0;
   font: 400 clamp(1.3125rem, 2.3vw, 1.625rem)/1.25 var(--serif);
   letter-spacing: 0.003em;
 }
@@ -286,7 +309,7 @@ img { max-width: 100%; height: auto; display: block; }
   align-items: start;
 }
 
-.piece-figure { margin: 0; }
+.piece-figure { margin: 0; min-width: 0; }
 
 .piece-figure img {
   width: 100%;
@@ -321,7 +344,7 @@ img { max-width: 100%; height: auto; display: block; }
 .specs {
   margin: clamp(40px, 6vh, 60px) 0 0;
   display: grid;
-  grid-template-columns: minmax(88px, auto) 1fr;
+  grid-template-columns: minmax(88px, auto) minmax(0, 1fr);
   gap: 0 28px;
 }
 
@@ -370,7 +393,7 @@ body[data-view="piece"] .foot { border-top: 1px solid var(--line); }
   :root { --gutter: 20px; }
 
   .grid[data-count="1"] .card-btn {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     gap: 0;
   }
 
@@ -378,11 +401,11 @@ body[data-view="piece"] .foot { border-top: 1px solid var(--line); }
 
   .grid[data-count="1"] .card-meta { margin-top: 20px; }
 
-  .piece-body { grid-template-columns: 1fr; }
+  .piece-body { grid-template-columns: minmax(0, 1fr); }
 
   .piece-text { padding-top: 4px; }
 
-  .grid { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
+  .grid { grid-template-columns: repeat(auto-fill, minmax(min(240px, 100%), 1fr)); }
 }
 
 @media (max-width: 520px) {

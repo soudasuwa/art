@@ -61,6 +61,26 @@ The site is served from `art.delass.ee`. That hostname is hard-coded in the
 relative. If the domain ever changes, grep for `art.delass.ee` and update
 all of them together.
 
+## Home screen, and why there is no PWA
+
+The site is deliberately **not** a PWA: no `manifest.json`, no service
+worker. Added to an iOS home screen it simply opens in the browser, which
+is what we want — there is no offline cache that could serve a stale
+gallery after a piece is added.
+
+What is in place is the part that makes that safe and tidy:
+
+- `apple-touch-icon.png`, so the home-screen icon is the mark rather than
+  a screenshot of the page.
+- Every navigation is in-page (`← Gallery`, `#piece=` hashes), so nothing
+  depends on browser chrome. A standalone window has no Back button; this
+  page never needs one.
+- `viewport-fit=cover` plus safe-area padding, so a notch or home
+  indicator never covers content.
+- Pinch-zoom is left enabled — `user-scalable=no` is not set.
+
+If a manifest is ever added, check those four things still hold.
+
 ## Deploying to Vercel
 
 Import the repository at [vercel.com/new](https://vercel.com/new). The
