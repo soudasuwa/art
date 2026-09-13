@@ -19,6 +19,8 @@
   var current = -1;
   var pushedEntry = false;
   var galleryScroll = 0;
+  var photoDocTop = 0;
+  var photoDocHeight = 0;
 
   document.getElementById("year").textContent = String(new Date().getFullYear());
   grid.dataset.count = String(pieces.length);
@@ -43,13 +45,59 @@
     document.startViewTransition(run);
   }
 
-  /* Only one element may carry a given transition name at a time, so the
-     name moves to whichever thumbnail is being opened or returned to. */
-  function markPhoto(index) {
+  /**
+   * Only one element may carry a given transition name at a time, so the
+   * name moves to whichever thumbnail is in play — and is dropped from
+   * both ends when the morph is switched off, leaving a plain cross-fade.
+   */
+  function setPhotoNames(index, on) {
     var thumbs = grid.querySelectorAll(".thumb img");
     for (var i = 0; i < thumbs.length; i++) {
-      thumbs[i].style.viewTransitionName = i === index ? "piece-photo" : "";
+      thumbs[i].style.viewTransitionName = on && i === index ? "piece-photo" : "";
     }
+    img.style.viewTransitionName = on ? "piece-photo" : "";
+  }
+
+  /**
+   * Whether a box at `top` of `height` sits in the viewport well enough to
+   * be worth morphing. Being mostly visible is not sufficient: a photo
+   * taller than the screen can be almost entirely on show while its top
+   * edge is far above the fold, and it is that top edge the morph starts
+   * from — which is what makes it look like the picture drops in from
+   * above. So the top edge has to be on screen too.
+   */
+  function morphWorthIt(top, height) {
+    if (!height || top < -8) return false;
+    var vh = window.innerHeight;
+    var seen = Math.min(top + height, vh) - Math.max(top, 0);
+    return Math.max(0, seen) / Math.min(height, vh) >= 0.4;
+  }
+
+  /**
+   * Carrying the photo between views only reads as one object moving when
+   * that object is on screen at both ends. Opening a piece also jumps the
+   * page to the top, so a thumbnail that had been scrolled out of sight
+   * would otherwise fly in from somewhere above the viewport, dragging a
+   * cross-fade of two differently scrolled pages with it. In that case the
+   * morph is skipped and the views simply cross-fade.
+   */
+  function thumbOnScreen(index) {
+    var thumb = grid.querySelectorAll(".thumb img")[index];
+    if (!thumb) return false;
+    var r = thumb.getBoundingClientRect();
+    /* Remember where it sits in the document, to judge the way back
+       while the gallery is hidden and cannot be measured. */
+    photoDocTop = r.top + window.scrollY;
+    photoDocHeight = r.height;
+    return morphWorthIt(r.top, r.height);
+  }
+
+  function morphOnReturn() {
+    var r = img.getBoundingClientRect();
+    /* Both ends have to qualify: the photo as it sits now, and the
+       thumbnail where it will land once the gallery scroll is restored. */
+    return morphWorthIt(r.top, r.height) &&
+      morphWorthIt(photoDocTop - galleryScroll, photoDocHeight);
   }
 
   function el(tag, className, text) {
@@ -164,7 +212,7 @@
 
     current = index;
     document.title = piece.title + " — " + siteTitle;
-    markPhoto(index);
+    setPhotoNames(index, !wasOnPiece && thumbOnScreen(index));
 
     withTransition(function () {
       galleryView.hidden = true;
@@ -182,7 +230,7 @@
     current = -1;
     pushedEntry = false;
     document.title = siteTitle;
-    markPhoto(returning);
+    setPhotoNames(returning, morphOnReturn());
 
     withTransition(function () {
       pieceView.hidden = true;
